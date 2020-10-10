@@ -14,13 +14,21 @@ btns.forEach(function (btn) {
   // Вешаем событие клик
   btn.addEventListener("click", function (e) {
     const currentValue = e.target.value;
-
+    if (
+      answer.textContent.length === 14 &&
+      currentValue !== "back" &&
+      currentValue !== "=" &&
+      currentValue !== "ac"
+    ) {
+      return;
+    }
     //проверим не число ли введено
     if (isNumber(currentValue)) {
       numberFunction(currentValue);
       newCalc = false;
     } else if (currentValue === "back") {
-      answer.textContent = answer.textContent.slice(0, -1);
+      answer.textContent =
+        answer.textContent.length === 1 ? "0" : answer.textContent.slice(0, -1);
     } else if (currentValue === "ac") {
       answer.textContent = "0";
       newCalc = true;
