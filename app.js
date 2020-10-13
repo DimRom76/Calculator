@@ -4,6 +4,7 @@ const answer = document.getElementsByClassName("answer")[0];
 const equal = document.getElementsByClassName("equal")[0];
 let result = 0;
 let newCalc = true;
+const MAXTEXTLENGTH = 14;
 
 const isNumber = function (char) {
   return Number.isInteger(Number.parseInt(char));
@@ -15,10 +16,11 @@ btns.forEach(function (btn) {
   btn.addEventListener("click", function (e) {
     const currentValue = e.target.value;
     if (
-      answer.textContent.length === 14 &&
+      answer.textContent.length === MAXTEXTLENGTH &&
       currentValue !== "back" &&
       currentValue !== "=" &&
-      currentValue !== "ac"
+      currentValue !== "ac" &&
+      !newCalc
     ) {
       return;
     }
@@ -29,18 +31,31 @@ btns.forEach(function (btn) {
     } else if (currentValue === "back") {
       answer.textContent =
         answer.textContent.length === 1 ? "0" : answer.textContent.slice(0, -1);
+
     } else if (currentValue === "ac") {
       answer.textContent = "0";
       newCalc = true;
     } else if (currentValue === "%") {
       answer.textContent = result / 100;
     } else if (currentValue === "=") {
-      answer.textContent = eval(answer.textContent);
+      answer.textContent = String(eval(answer.textContent)).slice(0, MAXTEXTLENGTH);
       newCalc = true;
     } else if (currentValue === "ex") {
       console.log(currentValue);
     } else if (currentValue === ".") {
-      console.log(currentValue);
+      const lastDote = answer.textContent.lastIndexOf(".");
+      const lastPlus = answer.textContent.lastIndexOf("+");
+      const lastMinus = answer.textContent.lastIndexOf("-");
+      const lastDivid = answer.textContent.lastIndexOf("/");
+      const lastMulti = answer.textContent.lastIndexOf("*");
+      const maxPositionSymbol = Math.max(lastPlus, lastMinus, lastDivid, lastMulti);
+
+      if (maxPositionSymbol === answer.textContent.length - 1) {
+        answer.textContent += "0" + currentValue;
+      }
+      else if (maxPositionSymbol >= lastDote) {
+       answer.textContent += currentValue;  
+       }
     } else {
       const lastSymbol = answer.textContent[answer.textContent.length - 1];
 
@@ -53,6 +68,7 @@ btns.forEach(function (btn) {
 });
 
 const numberFunction = function (number) {
+  answer.textContent = answer.textContent === "0" ? "" : answer.textContent;
   answer.textContent = newCalc ? number : answer.textContent + number;
 };
 
